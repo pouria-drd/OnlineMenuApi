@@ -1,8 +1,11 @@
 import uuid
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth import get_user_model
 
 from categories.models import Category
+
+User = get_user_model()
 
 
 class Product(models.Model):
@@ -24,3 +27,16 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+
+class ProductPrice(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    price = models.PositiveIntegerField()
+    user = models.ForeignKey(User, on_delete=models.RESTRICT)
+    product = models.ForeignKey(
+        Product, on_delete=models.RESTRICT, related_name="prices"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.price}"

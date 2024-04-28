@@ -1,10 +1,15 @@
 from django.contrib import admin
-from products.models import Product
+from products.models import Product, ProductPrice
+
+
+class ProductPriceInline(admin.TabularInline):
+    model = ProductPrice
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
+    inlines = [ProductPriceInline]
 
     list_display = [
         "name",
