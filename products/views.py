@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from django.utils.text import slugify
 
-from products.models import Product
-from products.serializers import ProductSerializer
+from products.models import Product, ProductPrice
+from products.serializers import ProductSerializer, ProductPriceSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -21,3 +21,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer.validated_data["slug"] = slugify(new_name)
 
         serializer.save()
+
+
+class ProductPriceViewSet(viewsets.ModelViewSet):
+    queryset = ProductPrice.objects.all()
+    serializer_class = ProductPriceSerializer

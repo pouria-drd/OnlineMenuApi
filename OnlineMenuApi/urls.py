@@ -5,14 +5,16 @@ from django.urls import path, include
 from rest_framework import routers
 
 from menus.views import MenuViewSet
-from products.views import ProductViewSet
 from categories.views import CategoryViewSet
+from products.views import ProductViewSet, ProductPriceViewSet
 
 
 router = routers.DefaultRouter()
 router.register(r"menus", MenuViewSet)
-router.register(r"products", ProductViewSet)
 router.register(r"categories", CategoryViewSet)
+
+router.register(r"products", ProductViewSet)
+router.register(r"product-price", ProductPriceViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
