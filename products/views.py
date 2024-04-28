@@ -1,3 +1,23 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from django.utils.text import slugify
 
-# Create your views here.
+from products.models import Product
+from products.serializers import ProductSerializer
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def perform_update(self, serializer):
+        instance = serializer.instance
+
+        slug = self.request.data.get("slug")
+
+        old_name = instance.name
+        new_name = self.request.data.get("name")
+
+        if new_name != old_name and (not slug or slug != new_name):
+            serializer.validated_data["slug"] = slugify(new_name)
+
+        serializer.save()
