@@ -6,6 +6,15 @@ class ProductPriceInline(admin.TabularInline):
     model = ProductPrice
 
 
+@admin.register(ProductPrice)
+class ProductPriceAdmin(admin.ModelAdmin):
+    ordering = ["-created_at"]
+    list_display = ["price", "user", "product", "created_at"]
+    list_filter = ["user", "product", "created_at"]
+    search_fields = ["price", "user__username", "product__name"]
+    readonly_fields = ["created_at"]
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]

@@ -40,3 +40,7 @@ class ProductPrice(models.Model):
 
     def __str__(self):
         return f"{self.price}"
+
+    class Meta:
+        verbose_name_plural = "Prices"
+        ordering = ["-created_at"]
