@@ -19,6 +19,8 @@ class UserAdmin(UserAdmin):
         "is_staff",
         "is_superuser",
         "last_login",
+        "date_joined",
+        "updated_at",
     ]
 
     search_fields = ["username", "email", "first_name", "last_name"]

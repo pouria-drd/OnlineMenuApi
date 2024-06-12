@@ -49,6 +49,8 @@ class User(AbstractUser):
         },
     )
 
+    updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+
     email = models.EmailField(
         _("email address"), unique=True, validators=[validate_email]
     )
