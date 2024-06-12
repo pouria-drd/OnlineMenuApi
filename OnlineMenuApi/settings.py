@@ -43,9 +43,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "debug_toolbar",
-    "menus",
-    "categories",
-    "products",
+    # custom apps
+    "api",
 ]
 
 MIDDLEWARE = [
