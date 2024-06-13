@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupSelectedConfig",
     # custom apps
     "users",
-    "menu",
-    "category",
+    "menus",
+    "categories",
 ]
 
 MIDDLEWARE = [

@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from menu.models import Menu
-from category.models import Category
+from menus.models import Menu
+from menus.admin import MenuAdmin
+from categories.models import Category
 
 
 @admin.register(Category)
@@ -50,9 +51,6 @@ class CategoryInline(admin.TabularInline):
     readonly_fields = ("created_at", "updated_at")
     fields = ("name", "slug", "icon", "is_active", "created_at", "updated_at")
     show_change_link = True
-
-
-from menu.admin import MenuAdmin
 
 
 class MenuAdminWithCategories(MenuAdmin):
