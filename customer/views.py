@@ -12,9 +12,9 @@ class CustomerCategoryListAPIView(generics.ListAPIView):
     serializer_class = CustomerCategorySerializer
 
     def get_queryset(self):
-        menu_slug = self.kwargs["menu_slug"]  # Extract menu_slug from URL
+        menu_id = self.kwargs["menu_id"]  # Extract menu id from URL
         try:
-            menu = Menu.objects.get(slug=menu_slug, is_active=True)
+            menu = Menu.objects.get(id=menu_id, is_active=True)
             categories = Category.objects.filter(
                 menu=menu, is_active=True
             )  # Filter by is_active=True

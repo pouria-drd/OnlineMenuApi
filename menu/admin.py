@@ -5,6 +5,7 @@ from django.contrib import admin
 @admin.register(Menu)
 class MenuAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "name",
         "owner",
         "slug",
