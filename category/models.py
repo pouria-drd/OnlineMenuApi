@@ -22,8 +22,8 @@ class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     menu = models.ForeignKey(Menu, on_delete=models.RESTRICT, related_name="categories")
 
-    name = models.CharField(_("name"), max_length=255)
-    slug = models.SlugField(_("slug"), max_length=255, unique=True)
+    name = models.CharField(_("name"), max_length=60)
+    slug = models.SlugField(_("slug"), max_length=60)
     icon = models.ImageField(_("icon"), upload_to=category_icon_upload_to, blank=True)
 
     is_active = models.BooleanField(_("is active"), default=True)
@@ -44,6 +44,14 @@ class Category(models.Model):
 
     def clean(self):
         super().clean()
+
+        if (
+            Category.objects.filter(menu=self.menu, slug=self.slug)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            raise ValidationError(_("The slug must be unique within the same menu!"))
+
         if self.icon:
             # Validate the image file type and size
             valid_image_extensions = ["jpg", "jpeg", "png"]
@@ -51,11 +59,11 @@ class Category(models.Model):
             if ext not in valid_image_extensions:
                 raise ValidationError(
                     _(
-                        "Unsupported file extension. Supported extensions are: jpg, jpeg, png."
+                        "Unsupported file extension. Supported extensions are: jpg, jpeg, png!"
                     )
                 )
             if self.icon.size > 1 * 1024 * 1024:  # 1MB limit
-                raise ValidationError(_("Image file too large ( > 1MB )."))
+                raise ValidationError(_("Image file too large ( > 1MB !"))
 
     def save(self, *args, **kwargs):
         if not self.slug:
