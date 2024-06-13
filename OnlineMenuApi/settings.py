@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     "users",
     "menu",
     "category",
-    "customer",
 ]
 
 MIDDLEWARE = [
