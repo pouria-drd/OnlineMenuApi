@@ -10,7 +10,8 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path("", include(router.urls)),
     path("admin/", admin.site.urls),
-    path("", include("customer_panel.urls")),
+    path("cst/", include("customer_panel.urls")),
+    path("owr/", include("owner_panel.urls")),
 ]
 
 if settings.DEBUG:
