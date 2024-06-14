@@ -1,12 +1,17 @@
 from django.urls import path
 
-from customer_panel.views import CustomerMenuCategoryListView
+from customer_panel.views import CustomerCategoryListView, CustomerCategoryDetailView
 
 
 urlpatterns = [
     path(
         "<slug:menu_slug>/",
-        CustomerMenuCategoryListView.as_view(),
-        name="customer-menu-category-list",
+        CustomerCategoryListView.as_view(),
+        name="customer-category-list",
+    ),
+    path(
+        "<slug:menu_slug>/<uuid:category_id>/",
+        CustomerCategoryDetailView.as_view(),
+        name="customer-category-detail",
     ),
 ]
