@@ -10,6 +10,7 @@ from categories.models import Category
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "slug",
         "menu",
         "is_active",
         "icon_display",
@@ -19,7 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ("name", "menu__name", "slug")
     list_filter = ("is_active", "created_at", "updated_at")
     prepopulated_fields = {"slug": ("name",)}
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ["id", "menu", "created_at", "updated_at"]
 
     def icon_display(self, obj):
         if obj.icon:

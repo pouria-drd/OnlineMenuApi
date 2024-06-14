@@ -1,5 +1,6 @@
 from categories.models import Category
 from rest_framework import serializers
+
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -20,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "menu", "created_at", "updated_at"]
 
     def validate(self, attrs):
         # Ensure that the 'name' field is unique within the same menu
