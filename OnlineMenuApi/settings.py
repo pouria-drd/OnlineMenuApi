@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "users",
     "menus",
     "categories",
+    "products",
     "owner_panel",
     "customer_panel",
 ]
