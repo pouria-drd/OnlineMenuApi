@@ -15,7 +15,7 @@ class Menu(models.Model):
     slug = models.SlugField(_("slug"), max_length=255, unique=True)
 
     description = models.TextField(_("description"), max_length=255, blank=True)
-    address = models.CharField(_("address"), max_length=255, blank=True)
+    address = models.TextField(_("address"), max_length=255, blank=True)
 
     is_active = models.BooleanField(_("is active"), default=True)
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
