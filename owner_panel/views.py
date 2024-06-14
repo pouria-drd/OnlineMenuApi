@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -12,9 +12,42 @@ from categories.models import Category
 from categories.serializers import CategorySerializer
 
 
-class CategoryCreateAPIView(ListCreateAPIView):
+class CategoryListCreateAPIView(ListCreateAPIView):
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated | IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def post(self, request: Request, *args, **kwargs):
+        try:
+            menu_slug = kwargs.get("menu_slug")
+            menu = Menu.objects.get(slug=menu_slug, is_active=True)
+
+            # Ensure only owners or admins can create categories
+            if not (request.user == menu.owner or request.user.is_superuser):
+                return Response(
+                    {"detail": _("You do not have permission to perform this action.")},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            # Serialize incoming data and validate
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            # Save the category with the associated menu
+            serializer.save(menu=menu)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Menu.DoesNotExist:
+            return Response(
+                {"detail": _("Menu does not exist or is not active.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except ValidationError as e:
+            return Response(
+                {"detail": _(str(e))},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def list(self, request: Request, *args, **kwargs):
         # Retrieve queryset of categories
@@ -50,30 +83,70 @@ class CategoryCreateAPIView(ListCreateAPIView):
             # If the menu with the specified slug does not exist
             return Category.objects.none()
 
-    def post(self, request: Request, *args, **kwargs):
+
+class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get_queryset(self):
+        menu_slug = self.kwargs.get("menu_slug")
+
+        try:
+            menu = Menu.objects.get(slug=menu_slug, is_active=True)
+            return Category.objects.filter(menu=menu)
+        except Menu.DoesNotExist:
+            return Category.objects.none()
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        category_id = self.kwargs.get("pk")
+        try:
+            return queryset.get(id=category_id)
+        except Category.DoesNotExist:
+            return None
+
+    def retrieve(self, request: Request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(
+                {"detail": _("Category not found for this menu.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def update(self, request: Request, *args, **kwargs):
         try:
             menu_slug = kwargs.get("menu_slug")
             menu = Menu.objects.get(slug=menu_slug, is_active=True)
+            category_id = kwargs.get("pk")
 
-            # Ensure only owners or admins can create categories
+            category = Category.objects.get(id=category_id, menu=menu)
+
             if not (request.user == menu.owner or request.user.is_superuser):
                 return Response(
                     {"detail": _("You do not have permission to perform this action.")},
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
-            # Serialize incoming data and validate
-            serializer = self.get_serializer(data=request.data)
+            data = request.data.copy()
+            data["menu"] = menu.id
+
+            serializer = self.get_serializer(category, data=data, partial=True)
             serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-            # Save the category with the associated menu
-            serializer.save(menu=menu)
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data)
 
         except Menu.DoesNotExist:
             return Response(
                 {"detail": _("Menu does not exist or is not active.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Category.DoesNotExist:
+            return Response(
+                {"detail": _("Category not found for this menu.")},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
