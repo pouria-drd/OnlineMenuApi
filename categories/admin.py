@@ -10,17 +10,15 @@ from categories.models import Category
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "name",
-        "slug",
         "menu",
         "is_active",
         "icon_display",
         "created_at",
         "updated_at",
     )
-    search_fields = ("name", "menu__name", "slug")
+    search_fields = ("name", "menu__name")
     list_filter = ("is_active", "created_at", "updated_at")
-    prepopulated_fields = {"slug": ("name",)}
-    readonly_fields = ["menu", "created_at", "updated_at"]
+    readonly_fields = ["created_at", "updated_at"]
 
     def icon_display(self, obj):
         if obj.icon:
@@ -50,7 +48,7 @@ class CategoryInline(admin.TabularInline):
     model = Category
     extra = 0
     readonly_fields = ("created_at", "updated_at")
-    fields = ("name", "slug", "icon", "is_active")
+    fields = ("name", "icon", "is_active")
     show_change_link = True
 
 

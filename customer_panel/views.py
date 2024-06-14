@@ -7,7 +7,6 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django.utils.translation import gettext_lazy as _
 
 from menus.models import Menu
-from products.models import Product
 from categories.models import Category
 
 from customer_panel.serializers import (

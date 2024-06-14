@@ -3,6 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.exceptions import PermissionDenied
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +17,7 @@ from categories.serializers import CategorySerializer
 
 class CategoryListCreateAPIView(ListCreateAPIView):
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated | IsAdminUser]
 
     def post(self, request: Request, *args, **kwargs):
         try:
@@ -26,7 +27,11 @@ class CategoryListCreateAPIView(ListCreateAPIView):
             # Ensure only owners or admins can create categories
             if not (request.user == menu.owner or request.user.is_superuser):
                 return Response(
-                    {"detail": _("You do not have permission to perform this action.")},
+                    {
+                        "detail": _(
+                            "You do not have permission to create new category for this menu."
+                        )
+                    },
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
@@ -78,8 +83,16 @@ class CategoryListCreateAPIView(ListCreateAPIView):
         try:
             # Attempt to retrieve the menu with the given slug
             menu = Menu.objects.get(slug=menu_slug, is_active=True)
-            # Retrieve categories related to the active menu
-            return Category.objects.filter(menu=menu, is_active=True)
+
+            # Check if the requesting user is the owner or an admin
+            if self.request.user == menu.owner or self.request.user.is_superuser:
+                # Retrieve categories related to the active menu
+                return Category.objects.filter(menu=menu, is_active=True)
+
+            else:
+                raise PermissionDenied(
+                    {"detail": _("You do not have permission to access this menu.")}
+                )
 
         except Menu.DoesNotExist:
             # If the menu with the specified slug does not exist

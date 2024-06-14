@@ -3,16 +3,15 @@ from PIL import Image
 from django.db import models
 from django_cleanup import cleanup
 from django.dispatch import receiver
-from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from categories.models import Category
 
 
-def category_icon_upload_to(instance, filename):
+def product_icon_upload_to(instance, filename):
     """Generate a unique upload path for product icons."""
-    return f"product_icons/{instance.category.slug}_{instance.slug}_{instance.id}/{filename}"
+    return f"{instance.category.menu.slug}/product_icons/{instance.id}/{filename}"
 
 
 @cleanup.select
@@ -23,8 +22,7 @@ class Product(models.Model):
     )
 
     name = models.CharField(_("name"), max_length=60)
-    slug = models.SlugField(_("slug"), max_length=60)
-    icon = models.ImageField(_("icon"), upload_to=category_icon_upload_to, blank=True)
+    icon = models.ImageField(_("icon"), upload_to=product_icon_upload_to, blank=True)
 
     price = models.DecimalField(_("price"), max_digits=10, decimal_places=2)
 
@@ -35,11 +33,10 @@ class Product(models.Model):
     class Meta:
         verbose_name = "product"
         verbose_name_plural = "products"
-        ordering = ["-created_at"]
 
+        ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["name"]),
-            models.Index(fields=["slug"]),
         ]
 
     def __str__(self):
@@ -47,15 +44,6 @@ class Product(models.Model):
 
     def clean(self):
         super().clean()
-
-        if (
-            Product.objects.filter(category=self.category, slug=self.slug)
-            .exclude(pk=self.pk)
-            .exists()
-        ):
-            raise ValidationError(
-                _("The slug must be unique within the same category!")
-            )
 
         if self.icon:
             # Validate the image file type and size
@@ -69,11 +57,6 @@ class Product(models.Model):
                 )
             if self.icon.size > 1 * 1024 * 1024:  # 1MB limit
                 raise ValidationError(_("Image file too large ( > 1MB !"))
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
 
 
 @receiver(models.signals.post_save, sender=Category)

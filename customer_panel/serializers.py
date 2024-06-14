@@ -1,8 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from categories.models import Category
 from products.models import Product
+from categories.models import Category
 
 
 class CustomerProductSerializer(ModelSerializer):

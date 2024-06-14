@@ -10,7 +10,6 @@ from categories.admin import CategoryAdmin
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
-        "slug",
         "price",
         "category",
         "is_active",
@@ -18,10 +17,9 @@ class ProductAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    search_fields = ("name", "slug", "category__name", "slug")
-    list_filter = ("is_active", "created_at", "updated_at")
-    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ("name", "category__name")
     readonly_fields = ["created_at", "updated_at"]
+    list_filter = ("is_active", "created_at", "updated_at")
 
     def icon_display(self, obj):
         if obj.icon:
@@ -48,11 +46,11 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class ProductInline(admin.TabularInline):
-    model = Product
     extra = 0
-    readonly_fields = ("created_at", "updated_at")
-    fields = ("name", "price", "slug", "icon", "is_active")
+    model = Product
     show_change_link = True
+    readonly_fields = ("created_at", "updated_at")
+    fields = ("name", "price", "icon", "is_active")
 
 
 class CategoryAdminWithProducts(CategoryAdmin):
