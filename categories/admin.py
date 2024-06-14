@@ -20,7 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ("name", "menu__name", "slug")
     list_filter = ("is_active", "created_at", "updated_at")
     prepopulated_fields = {"slug": ("name",)}
-    readonly_fields = ["id", "menu", "created_at", "updated_at"]
+    readonly_fields = ["menu", "created_at", "updated_at"]
 
     def icon_display(self, obj):
         if obj.icon:
@@ -50,7 +50,7 @@ class CategoryInline(admin.TabularInline):
     model = Category
     extra = 0
     readonly_fields = ("created_at", "updated_at")
-    fields = ("name", "slug", "icon", "is_active", "created_at", "updated_at")
+    fields = ("name", "slug", "icon", "is_active")
     show_change_link = True
 
 

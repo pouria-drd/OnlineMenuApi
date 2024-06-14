@@ -40,7 +40,7 @@ class Category(models.Model):
         ]
 
     def __str__(self):
-        return self.name
+        return self.name + " " + f"({self.menu.name})"
 
     def clean(self):
         super().clean()

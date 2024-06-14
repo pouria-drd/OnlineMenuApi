@@ -43,7 +43,7 @@ class Product(models.Model):
         ]
 
     def __str__(self):
-        return self.name
+        return self.name + " " + f"({self.category.name})"
 
     def clean(self):
         super().clean()
