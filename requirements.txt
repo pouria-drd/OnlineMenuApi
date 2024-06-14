@@ -4,6 +4,8 @@ django-cleanup==8.1.0
 django-cors-headers==4.3.1
 django-debug-toolbar==4.3.0
 djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
 pillow==10.3.0
+PyJWT==2.8.0
 sqlparse==0.5.0
 tzdata==2024.1
