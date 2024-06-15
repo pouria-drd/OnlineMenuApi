@@ -15,7 +15,7 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("cst/", include("customer_panel.urls")),
+    path("menus/", include("menus.urls")),
     # main admin panel
     path("admin/", admin.site.urls),
     # auth

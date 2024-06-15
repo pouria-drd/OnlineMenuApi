@@ -50,10 +50,8 @@ INSTALLED_APPS = [
     # custom apps
     "users",
     "menus",
-    "categories",
     "products",
-    "owner_panel",
-    "customer_panel",
+    "categories",
 ]
 
 MIDDLEWARE = [
