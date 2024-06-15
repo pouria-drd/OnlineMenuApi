@@ -19,7 +19,7 @@ urlpatterns = [
     # main admin panel
     path("admin/", admin.site.urls),
     # auth
-    path("api-auth/", include("rest_framework.urls")),
+    # path("api-auth/", include("rest_framework.urls")),
     path("auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # protected (only for menu owners)

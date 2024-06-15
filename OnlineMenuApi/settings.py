@@ -156,18 +156,18 @@ CORS_ALLOW_METHODS = [
 ]
 
 
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": (
-#         "rest_framework_simplejwt.authentication.JWTAuthentication",
-#     )
-# }
-
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
 }
+
+# REST_FRAMEWORK = {
+#     "DEFAULT_AUTHENTICATION_CLASSES": [
+#         "rest_framework.authentication.SessionAuthentication",
+#         "rest_framework.authentication.BasicAuthentication",
+#     ],
+# }
 
 
 from datetime import timedelta
