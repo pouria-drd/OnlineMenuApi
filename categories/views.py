@@ -112,8 +112,9 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
     """
     API view to retrieve and update details of a specific category.
 
-    This view allows authenticated users to retrieve and update details of a
-    category associated with their active menu.
+    - Requires authentication.
+    - GET: Retrieve details of an existing category.
+    - PUT/PATCH: Update details of an existing category associated with the authenticated user's active menu.
     """
 
     serializer_class = CategorySerializer
@@ -122,7 +123,10 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
 
     def retrieve(self, request: Request, *args, **kwargs):
         """
-        Handle GET request to retrieve category details.
+        GET method to retrieve details of an existing category.
+
+        - Retrieves the category instance using get_object().
+        - Returns serialized category data or a 404 response if category is not found.
         """
         # Get the category instance
         instance = self.get_object()
@@ -140,10 +144,13 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
 
     def update(self, request: Request, *args, **kwargs):
         """
-        Handle PUT request to update category details.
+        PUT/PATCH method to update details of an existing category.
 
-        Tries to find the active menu for the authenticated user and the category
-        within that menu.
+        - Retrieves the authenticated user and associated active menu.
+        - Retrieves the category ID from URL parameters.
+        - Retrieves the existing category object.
+        - Validates and saves the updated category data using the serializer.
+        - Returns the updated category data or appropriate error responses.
         """
         try:
             # Get the authenticated user and associated active menu
