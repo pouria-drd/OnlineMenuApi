@@ -1,10 +1,9 @@
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
-
-from rest_framework.exceptions import ValidationError
 
 from django.utils.translation import gettext_lazy as _
 
@@ -22,9 +21,28 @@ class CategoryListCreateAPIView(ListCreateAPIView):
     - POST: Create a new category for the authenticated user's menu.
     """
 
+    allowed_methods = ["GET", "POST"]
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
-    allowed_methods = ["GET", "POST"]
+
+    def list(self, request: Request, *args, **kwargs):
+        """
+        List all active categories for the authenticated user's active menu.
+
+        - Returns a 404 response if no active menu or categories are found.
+        """
+        queryset = self.get_queryset()
+        # Serialize and return the queryset data
+        if queryset.exists():
+            serializer = self.serializer_class(queryset, many=True)
+            return Response(serializer.data)
+
+        else:
+            # Handle case where no categories are found
+            return Response(
+                {"detail": _("No categories found for this user or menu.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
     def post(self, request):
         """
@@ -35,10 +53,9 @@ class CategoryListCreateAPIView(ListCreateAPIView):
         - Returns the created category data on success.
         """
         try:
-            # Get the authenticated user from the request
-            request_user = request.user
             # Retrieve the menu associated with the authenticated user
-            menu = Menu.objects.get(owner=request_user)
+            request_user = request.user
+            menu = Menu.objects.get(owner=request_user, is_active=True)
 
             # Serialize and validate the incoming data
             serializer = self.serializer_class(data=request.data)
@@ -68,26 +85,6 @@ class CategoryListCreateAPIView(ListCreateAPIView):
             return Response(
                 {"detail": _("Something went wrong...")},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-    def list(self, request: Request, *args, **kwargs):
-        """
-        List all active categories for the authenticated user's active menu.
-
-        - Returns a 404 response if no active menu or categories are found.
-        """
-        queryset = self.get_queryset()
-
-        if queryset.exists():
-            # Serialize and return the queryset data
-            serializer = self.serializer_class(queryset, many=True)
-            return Response(serializer.data)
-
-        else:
-            # Handle case where no categories are found
-            return Response(
-                {"detail": _("No categories found for this user or menu.")},
-                status=status.HTTP_404_NOT_FOUND,
             )
 
     def get_queryset(self):
