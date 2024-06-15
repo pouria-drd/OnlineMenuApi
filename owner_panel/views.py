@@ -22,7 +22,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
     def post(self, request: Request, *args, **kwargs):
         try:
             menu_slug = kwargs.get("menu_slug")
-            menu = Menu.objects.get(slug=menu_slug, is_active=True)
+            menu = Menu.objects.get(user=request.user, slug=menu_slug, is_active=True)
 
             # Ensure only owners or admins can create categories
             if not (request.user == menu.owner or request.user.is_superuser):
@@ -53,6 +53,12 @@ class CategoryListCreateAPIView(ListCreateAPIView):
         except ValidationError as e:
             return Response(
                 {"detail": _(str(e))},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            return Response(
+                {"detail": _("Something went wrong...")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -101,7 +107,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 
 class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated | IsAdminUser]
 
     def retrieve(self, request: Request, *args, **kwargs):
         instance = self.get_object()
@@ -123,7 +129,11 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
 
             if not (request.user == menu.owner or request.user.is_superuser):
                 return Response(
-                    {"detail": _("You do not have permission to perform this action.")},
+                    {
+                        "detail": _(
+                            "You do not have permission to update this category."
+                        )
+                    },
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
@@ -151,15 +161,11 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def get_queryset(self):
-        menu_slug = self.kwargs.get("menu_slug")
-
-        try:
-            menu = Menu.objects.get(slug=menu_slug, is_active=True)
-            return Category.objects.filter(menu=menu)
-
-        except Menu.DoesNotExist:
-            return Category.objects.none()
+        except Exception as e:
+            return Response(
+                {"detail": _("Something went wrong...")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -169,6 +175,28 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
             return queryset.get(id=category_id)
         except Category.DoesNotExist:
             return None
+
+    def get_queryset(self):
+        menu_slug = self.kwargs.get("menu_slug")
+
+        try:
+            menu = Menu.objects.get(slug=menu_slug, is_active=True)
+
+            # Check if the requesting user is the owner or an admin
+            if self.request.user == menu.owner or self.request.user.is_superuser:
+                return Category.objects.filter(menu=menu, is_active=True)
+
+            else:
+                raise PermissionDenied(
+                    {
+                        "detail": _(
+                            "You do not have permission to access this menu / category."
+                        )
+                    }
+                )
+
+        except Menu.DoesNotExist:
+            return Category.objects.none()
 
 
 class ProductListCreateAPIView(ListCreateAPIView):
@@ -182,7 +210,9 @@ class ProductListCreateAPIView(ListCreateAPIView):
 
             if not (request.user == category.menu.owner or request.user.is_superuser):
                 return Response(
-                    {"detail": "You do not have permission to perform this action."},
+                    {
+                        "detail": "You do not have permission to create product for this category."
+                    },
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
@@ -201,6 +231,12 @@ class ProductListCreateAPIView(ListCreateAPIView):
         except ValidationError as e:
             return Response(
                 {"detail": _(str(e))},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            return Response(
+                {"detail": _("Something went wrong...")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -225,11 +261,14 @@ class ProductListCreateAPIView(ListCreateAPIView):
         Filter categories that are also active.
         """
 
+        menu_slug = self.kwargs.get("menu_slug")
         category_id = self.kwargs.get("category_id")
 
         try:
+            menu = Menu.objects.get(slug=menu_slug, is_active=True)
+
             # Attempt to retrieve the category with the given id
-            category = Category.objects.get(id=category_id, is_active=True)
+            category = Category.objects.get(menu=menu, id=category_id, is_active=True)
             # Retrieve products related to the active category
             return Product.objects.filter(category=category, is_active=True)
 

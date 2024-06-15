@@ -16,10 +16,11 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path("", include(router.urls)),
     path("admin/", admin.site.urls),
+    path("api-auth/", include("rest_framework.urls")),
     path("auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("cst/", include("customer_panel.urls")),
-    path("owr/", include("owner_panel.urls")),
+    path("categories/", include("categories.urls")),
 ]
 
 if settings.DEBUG:

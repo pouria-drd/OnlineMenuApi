@@ -30,7 +30,10 @@ class Category(models.Model):
         ordering = ["-created_at"]
         verbose_name = _("category")
         verbose_name_plural = _("categories")
-        indexes = [models.Index(fields=["name"])]
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["menu", "is_active"]),
+        ]
 
     def __str__(self):
         return self.name + " " + f"({self.menu.name})"
