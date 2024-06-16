@@ -3,10 +3,7 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 
-from rest_framework_simplejwt.views import (
-    TokenRefreshView,
-    TokenObtainPairView,
-)
+from users.views import MyTokenObtainPairView, MyTokenRefreshView
 
 
 from rest_framework import routers
@@ -20,8 +17,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # auth
     # path("api-auth/", include("rest_framework.urls")),
-    path("auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("auth/token/", MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("auth/token/refresh/", MyTokenRefreshView.as_view(), name="token_refresh"),
     # protected (only for menu owners)
     path("categories/", include("categories.urls")),
     path("categories/<uuid:category_id>/products/", include("products.urls")),

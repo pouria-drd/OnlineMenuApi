@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,12 +27,6 @@ SECRET_KEY = "django-insecure-mqk5+q5mm%ptuj+%^b9ex!riz_))2#e-vwqwpye&!e(ma6b+b9
 DEBUG = True
 
 AUTH_USER_MODEL = "users.User"
-
-ALLOWED_HOSTS = []
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 # Application definition
 
@@ -142,6 +137,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+ALLOWED_HOSTS = []
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
@@ -169,11 +170,9 @@ REST_FRAMEWORK = {
 #     ],
 # }
 
-
-from datetime import timedelta
-
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=60),
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "UPDATE_LAST_LOGIN": True,
 }
