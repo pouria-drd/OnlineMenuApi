@@ -38,8 +38,18 @@ class ProductListCreateAPIView(ListCreateAPIView):
         queryset = self.get_queryset()
         # Serialize and return the queryset data
         if queryset.exists():
-            serializer = self.serializer_class(queryset, many=True)
-            return Response(serializer.data)
+            menu = Menu.objects.get(owner=request.user)
+            # Retrieve category_id from URL kwargs
+            category_id = self.kwargs.get("category_id")
+            # Retrieve the category object associated with the menu and category_id
+            category_name = Category.objects.get(menu=menu, id=category_id).name
+
+            serializer = self.serializer_class(
+                queryset, context={"request": request}, many=True
+            )
+            return Response(
+                {"categoryName": category_name, "products": serializer.data}
+            )
 
         else:
             # Handle case where no products are found
@@ -63,7 +73,7 @@ class ProductListCreateAPIView(ListCreateAPIView):
             menu = Menu.objects.get(owner=request_user, is_active=True)
 
             category_id = self.kwargs.get("category_id")
-            category = Category.objects.get(menu=menu, id=category_id, is_active=True)
+            category = Category.objects.get(menu=menu, id=category_id)
 
             # Serialize and validate the incoming data
             serializer = self.serializer_class(data=request.data)
@@ -119,10 +129,10 @@ class ProductListCreateAPIView(ListCreateAPIView):
             # Retrieve category_id from URL kwargs
             category_id = self.kwargs.get("category_id")
             # Retrieve the category object associated with the menu and category_id
-            category = Category.objects.get(menu=menu, id=category_id, is_active=True)
+            category = Category.objects.get(menu=menu, id=category_id)
 
             # Filter products that are active and associated with the category
-            products = Product.objects.filter(category=category, is_active=True)
+            products = Product.objects.filter(category=category)
 
             return products
 
@@ -186,7 +196,7 @@ class ProductDetailUpdateAPIView(RetrieveUpdateAPIView):
 
             # Get the category with ID from URL parameters
             category_id = self.kwargs.get("category_id")
-            category = Category.objects.get(menu=menu, id=category_id, is_active=True)
+            category = Category.objects.get(menu=menu, id=category_id)
 
             # Get the product with ID from URL parameters
             product_id = self.kwargs.get("product_id")
@@ -276,10 +286,10 @@ class ProductDetailUpdateAPIView(RetrieveUpdateAPIView):
             # Retrieve category_id from URL kwargs
             category_id = self.kwargs.get("category_id")
             # Retrieve the category object associated with the menu and category_id
-            category = Category.objects.get(menu=menu, id=category_id, is_active=True)
+            category = Category.objects.get(menu=menu, id=category_id)
 
             # Filter products that are active and associated with the category
-            products = Product.objects.filter(category=category, is_active=True)
+            products = Product.objects.filter(category=category)
 
             return products
 

@@ -31,6 +31,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 
         - Returns a 404 response if no active menu or categories are found.
         """
+
         queryset = self.get_queryset()
         # Serialize and return the queryset data
         if queryset.exists():

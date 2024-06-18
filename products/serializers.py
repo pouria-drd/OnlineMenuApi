@@ -6,6 +6,10 @@ from django.utils.translation import gettext_lazy as _
 class ProductSerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(required=False, allow_null=True)
 
+    isActive = serializers.BooleanField(source="is_active")
+    createdAt = serializers.DateTimeField(source="created_at")
+    updatedAt = serializers.DateTimeField(source="updated_at")
+
     class Meta:
         model = Product
         fields = [
@@ -14,9 +18,9 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "price",
             "icon",
-            "is_active",
-            "created_at",
-            "updated_at",
+            "isActive",
+            "createdAt",
+            "updatedAt",
         ]
 
         read_only_fields = ["id", "category", "created_at", "updated_at"]
