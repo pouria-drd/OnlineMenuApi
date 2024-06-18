@@ -8,8 +8,8 @@ class CategorySerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(required=False, allow_null=True)
 
     isActive = serializers.BooleanField(source="is_active")
-    createdAt = serializers.DateTimeField(source="created_at")
-    updatedAt = serializers.DateTimeField(source="updated_at")
+    createdAt = serializers.DateTimeField(source="created_at", read_only=True)
+    updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
 
     class Meta:
         model = Category
@@ -23,7 +23,7 @@ class CategorySerializer(serializers.ModelSerializer):
             "updatedAt",
         ]
 
-        read_only_fields = ["id", "menu", "created_at", "updated_at"]
+        read_only_fields = ["id", "menu", "updatedAt", "createdAt"]
 
     def validate_icon(self, value):
         if value:
