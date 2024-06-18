@@ -34,8 +34,11 @@ class CategoryListCreateAPIView(ListCreateAPIView):
         queryset = self.get_queryset()
         # Serialize and return the queryset data
         if queryset.exists():
-            serializer = self.serializer_class(queryset, many=True)
-            return Response(serializer.data)
+            menu_name = Menu.objects.get(owner=request.user).name
+            serializer = self.serializer_class(
+                queryset, context={"request": request}, many=True
+            )
+            return Response({"menuName": menu_name, "categories": serializer.data})
 
         else:
             # Handle case where no categories are found
@@ -87,6 +90,15 @@ class CategoryListCreateAPIView(ListCreateAPIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        # Ensure the request object is passed to the serializer context
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
+
     def get_queryset(self):
         """
         Retrieve the queryset of active categories for the authenticated user's active menu.
@@ -100,7 +112,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
             menu = Menu.objects.get(owner=request_user, is_active=True)
 
             # Filter categories that are active and associated with the menu
-            categories = Category.objects.filter(menu=menu, is_active=True)
+            categories = Category.objects.filter(menu=menu)
             return categories
 
         except Menu.DoesNotExist:
@@ -226,7 +238,7 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
             menu = Menu.objects.get(owner=request_user, is_active=True)
 
             # Get all active categories for the menu
-            categories = Category.objects.filter(menu=menu, is_active=True)
+            categories = Category.objects.filter(menu=menu)
             return categories
         # Return an empty queryset if menu is not found
         except Menu.DoesNotExist:

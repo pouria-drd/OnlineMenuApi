@@ -137,7 +137,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["192.168.1.103"]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -145,6 +145,7 @@ INTERNAL_IPS = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://192.168.1.103:5173",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -171,8 +172,8 @@ REST_FRAMEWORK = {
 # }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=3000),
+    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=6000),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "UPDATE_LAST_LOGIN": True,
 }
