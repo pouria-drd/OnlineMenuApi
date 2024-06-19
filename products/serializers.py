@@ -7,8 +7,8 @@ class ProductSerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(required=False, allow_null=True)
 
     isActive = serializers.BooleanField(source="is_active")
-    createdAt = serializers.DateTimeField(source="created_at")
-    updatedAt = serializers.DateTimeField(source="updated_at")
+    createdAt = serializers.DateTimeField(source="created_at", read_only=True)
+    updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
 
     class Meta:
         model = Product
@@ -19,11 +19,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "icon",
             "isActive",
-            "createdAt",
             "updatedAt",
+            "createdAt",
         ]
 
-        read_only_fields = ["id", "category", "created_at", "updated_at"]
+        read_only_fields = ["id", "category", "updatedAt", "createdAt"]
 
     def validate_icon(self, value):
         if value:

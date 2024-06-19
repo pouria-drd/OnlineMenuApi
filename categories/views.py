@@ -132,7 +132,7 @@ class CategoryDetailUpdateAPIView(RetrieveUpdateAPIView):
 
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
-    allowed_methods = ["GET", "PATCH", "PUT"]
+    allowed_methods = ["GET", "PATCH"]
 
     def retrieve(self, request: Request, *args, **kwargs):
         """

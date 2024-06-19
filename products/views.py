@@ -42,13 +42,18 @@ class ProductListCreateAPIView(ListCreateAPIView):
             # Retrieve category_id from URL kwargs
             category_id = self.kwargs.get("category_id")
             # Retrieve the category object associated with the menu and category_id
-            category_name = Category.objects.get(menu=menu, id=category_id).name
-
+            category = Category.objects.get(menu=menu, id=category_id)
+            category_name = category.name
+            categoryId = category.id
             serializer = self.serializer_class(
                 queryset, context={"request": request}, many=True
             )
             return Response(
-                {"categoryName": category_name, "products": serializer.data}
+                {
+                    "categoryName": category_name,
+                    "categoryId": categoryId,
+                    "products": serializer.data,
+                }
             )
 
         else:
@@ -156,7 +161,7 @@ class ProductDetailUpdateAPIView(RetrieveUpdateAPIView):
 
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
-    allowed_methods = ["GET", "PATCH", "PUT"]
+    allowed_methods = ["GET", "PATCH"]
 
     def retrieve(self, request: Request, *args, **kwargs):
         """
@@ -231,7 +236,7 @@ class ProductDetailUpdateAPIView(RetrieveUpdateAPIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        except ValidationError as e:
+        except ValidationError as ve:
             # Return 400 error if data is invalid
             return Response(
                 {"detail": _("Invalid Data!")},
