@@ -15,7 +15,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: Don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# AUTH_USER_MODEL = "users.User"  # Uncomment if using a custom user model
+AUTH_USER_MODEL = "users.UserModel"
 
 # ---------------------------------------------------------------
 # Application definition
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",  # JSON Web Token authentication
     "django_cleanup.apps.CleanupSelectedConfig",  # Clean up unused media files
     # Custom apps
-    # "users",  # Uncomment if you have a 'users' app
+    "users",
 ]
 
 # Middleware configuration
