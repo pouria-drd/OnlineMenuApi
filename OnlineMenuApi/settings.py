@@ -163,9 +163,9 @@ INTERNAL_IPS = os.getenv("INTERNAL_IPS", "127.0.0.1").split(
 # ---------------------------------------------------------------
 
 CORS_ALLOW_CREDENTIALS = (
-    os.environ.get("CORS_ALLOW_CREDENTIALS", "False") == "True"
+    os.getenv("CORS_ALLOW_CREDENTIALS", "False") == "True"
 )  # Whether to allow credentials in CORS
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(
     ","
 )  # List of allowed origins for CORS
 CORS_ALLOW_METHODS = [
@@ -204,13 +204,12 @@ REST_FRAMEWORK = {
 # Simple JWT Configuration
 # ---------------------------------------------------------------
 
+minutes = int(os.environ.get("ACCESS_TOKEN_LIFETIME", 15))
+hours = int(os.environ.get("REFRESH_TOKEN_LIFETIME", 24))
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=int(os.environ.get("ACCESS_TOKEN_LIFETIME", "15"))
-    ),  # Access token lifetime
-    "REFRESH_TOKEN_LIFETIME": timedelta(
-        hours=int(os.environ.get("REFRESH_TOKEN_LIFETIME", "24"))
-    ),  # Refresh token lifetime
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=minutes),  # Access token lifetime
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=hours),  # Refresh token lifetime
     "AUTH_HEADER_TYPES": ("Bearer",),  # Authentication header type
     "UPDATE_LAST_LOGIN": True,  # Update last login time when refreshing token
 }
@@ -219,15 +218,15 @@ SIMPLE_JWT = {
 # Email Configuration
 # ---------------------------------------------------------------
 
-EMAIL_BACKEND = os.environ.get(
+EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
 )  # Email backend
-EMAIL_HOST = os.environ.get("EMAIL_HOST")  # SMTP host
-EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)  # SMTP port
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # SMTP user
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")  # Default email sender
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # SMTP password
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "False") == "True"  # Use TLS encryption
+EMAIL_HOST = os.getenv("EMAIL_HOST")  # SMTP host
+EMAIL_PORT = os.getenv("EMAIL_PORT", 587)  # SMTP port
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # SMTP user
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")  # Default email sender
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # SMTP password
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False") == "True"  # Use TLS encryption
 
 # ---------------------------------------------------------------
 # Logging Configuration
@@ -240,7 +239,7 @@ LOGGING = {
         "login_file_v1": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": os.environ.get(
+            "filename": os.getenv(
                 "LOGIN_LOG_FILE", "login_activity_v1.log"
             ),  # Login activity log file
         },
@@ -251,7 +250,7 @@ LOGGING = {
         "email_file_v1": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": os.environ.get(
+            "filename": os.getenv(
                 "EMAIL_LOG_FILE", "email_activity_v1.log"
             ),  # Email activity log file
         },
