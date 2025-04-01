@@ -64,3 +64,8 @@ class UserAdmin(UserAdmin):
             },
         ),
     )
+
+
+admin.site.index_title = "Online Menu"
+admin.site.site_header = "Online Menu Admin"
+admin.site.site_title = "Pouria DRD"
