@@ -77,15 +77,12 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
         return self.username
 
     def get_full_name(self):
-        """
-        Returns the full name of the user.
-        """
-        return f"{self.first_name} {self.last_name}".strip()
+        """Returns the user's full name or an empty string if missing."""
+        return " ".join(filter(None, [self.first_name, self.last_name])) or ""
 
     def save(self, *args, **kwargs):
-        """
-        Override save method to ensure the username is always stored in lowercase.
-        """
-        self.username = self.username.lower()  # Ensure username is in lowercase
+        """Ensure consistency by storing username and email in lowercase."""
+        self.email = self.email.lower()
+        self.username = self.username.lower()
 
         super().save(*args, **kwargs)
