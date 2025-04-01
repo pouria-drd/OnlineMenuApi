@@ -25,3 +25,8 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += (path("__debug__/", include("debug_toolbar.urls")),)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+admin.site.index_title = "Online Menu"
+admin.site.site_header = "Online Menu Admin"
+admin.site.site_title = "Pouria DRD"
