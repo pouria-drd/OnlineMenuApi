@@ -19,7 +19,7 @@ urlpatterns = [
     # main admin
     path(base_url + os.getenv("ADMIN_URL", "admin/"), admin.site.urls),
     # api version 1
-    path(base_url + "v1/users/", include("users.urls")),
+    path(base_url + "users/", include("users.urls")),
 ]
 
 if settings.DEBUG:
